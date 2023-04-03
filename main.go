@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/KishorPokharel/calculator/eval"
 	"github.com/KishorPokharel/calculator/lexer"
-	"github.com/KishorPokharel/calculator/token"
+	"github.com/KishorPokharel/calculator/parser"
 )
 
 const PROMPT = ">> "
@@ -22,9 +23,9 @@ func main() {
 
 		line := scanner.Text()
 		l := lexer.New(line)
-
-		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
-			fmt.Printf("%+v\n", tok)
-		}
+		p := parser.New(l)
+		tree := p.Parse()
+		fmt.Printf("%f\n", eval.Eval(tree))
+		// fmt.Printf("%s\n", tree)
 	}
 }
