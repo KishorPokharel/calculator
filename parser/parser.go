@@ -23,6 +23,7 @@ func New(l *lexer.Lexer) *Parser {
 	return p
 }
 
+// nextToken consumes the token
 func (p *Parser) nextToken() {
 	p.curToken = p.peekToken
 	p.peekToken = p.l.NextToken()
@@ -91,6 +92,18 @@ func (p *Parser) factor() ast.Node {
 			log.Fatal("could not parse float")
 		}
 		return ast.NumberNode{Value: f}
+	}
+	// ( E )
+	if p.curToken.Type == token.LPAREN {
+		p.nextToken()
+		expr := p.expr()
+		if p.curToken.Type == token.RPAREN {
+			p.nextToken()
+			return expr
+		} else {
+			log.Println("invalid expression, expected )")
+			return nil
+		}
 	}
 	return nil
 }
