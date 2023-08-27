@@ -50,6 +50,7 @@ func (p *Parser) Parse() (ast.Node, error) {
 	if p.curToken.Type == token.EOF {
 		return nil, ErrNoTokens
 	}
+	// assignment
 	if p.curToken.Type == token.IDENTIFIER && p.peekToken.Type == token.ASSIGN {
 		id := p.curToken.Literal
 		p.nextToken() // =
@@ -58,11 +59,19 @@ func (p *Parser) Parse() (ast.Node, error) {
 		if err != nil {
 			return nil, err
 		}
+		if p.curToken.Type != token.EOF {
+			return nil, fmt.Errorf("Syntax error: assignment statement to end, found %s", p.curToken.Literal)
+		}
 		return ast.AssignmentNode{ID: id, A: expr}, nil
 	}
+
+	// expression
 	result, err := p.expr()
 	if err != nil {
 		return nil, err
+	}
+	if p.curToken.Type != token.EOF {
+		return nil, fmt.Errorf("Syntax error: Expected expression to end, found %s", p.curToken.Literal)
 	}
 	return result, nil
 }
@@ -125,11 +134,11 @@ func (p *Parser) term() (ast.Node, error) {
 
 func (p *Parser) factor() (ast.Node, error) {
 	if p.curToken.Type == token.NUMBER {
-		defer p.nextToken()
 		f, err := strconv.ParseFloat(p.curToken.Literal, 64)
 		if err != nil {
 			return nil, fmt.Errorf("could not parse float")
 		}
+		p.nextToken()
 		return ast.NumberNode{Value: f}, nil
 	}
 
