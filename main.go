@@ -37,5 +37,12 @@ func main() {
 		}
 		fmt.Printf("%f\n", eval.Eval(tree))
 		// fmt.Printf("%s\n", tree)
+		// for {
+		// 	tok := l.NextToken()
+		// 	if tok.Type == token.EOF {
+		// 		break
+		// 	}
+		// 	fmt.Println(tok)
+		// }
 	}
 }

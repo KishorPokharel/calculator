@@ -29,6 +29,8 @@ func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 	l.skipWhitespace()
 	switch l.ch {
+	case '=':
+		tok = newToken(token.ASSIGN, l.ch)
 	case '(':
 		tok = newToken(token.LPAREN, l.ch)
 	case ')':
@@ -49,12 +51,22 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Type = token.NUMBER
 			tok.Literal = l.readNumber()
 			return tok
+		} else if isAlpha(l.ch) {
+			tok.Type = token.IDENTIFIER
+			tok.Literal = l.readIdentifier()
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
 		}
 	}
 	l.readChar()
 	return tok
+}
+
+func isAlpha(ch byte) bool {
+	return ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z'
+}
+func isAlphaNumeric(ch byte) bool {
+	return isAlpha(ch) || isDigit(ch)
 }
 
 func isDigit(ch byte) bool {
@@ -64,6 +76,13 @@ func isDigit(ch byte) bool {
 func (l *Lexer) readNumber() string {
 	position := l.position
 	for isDigit(l.ch) {
+		l.readChar()
+	}
+	return l.input[position:l.position]
+}
+func (l *Lexer) readIdentifier() string {
+	position := l.position
+	for isAlphaNumeric(l.ch) {
 		l.readChar()
 	}
 	return l.input[position:l.position]

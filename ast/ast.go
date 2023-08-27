@@ -57,3 +57,20 @@ type NegationNode struct {
 func (n NegationNode) String() string {
 	return fmt.Sprintf("( - %s)", n.A)
 }
+
+type AssignmentNode struct {
+	ID string
+	A  Node
+}
+
+func (n AssignmentNode) String() string {
+	return fmt.Sprintf("(%s = %s)", n.ID, n.A)
+}
+
+// type IdentifierNode struct {
+// 	ID string
+// }
+
+// func (n IdentifierNode) String() string {
+// 	return fmt.Sprintf("(%s)", n.ID)
+// }

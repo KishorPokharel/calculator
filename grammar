@@ -1,3 +1,8 @@
+Statement :=
+    | ID "=" Expression
+    | Expression
+    ;
+
 Expression :=
     | Term ( ( "+" | "-" ) Term )*
     ;
@@ -8,6 +13,7 @@ Term :=
 
 Factor :=
     | NUMBER
+    | ID
     | "-" Factor
     | "(" Expression ")"
     ;

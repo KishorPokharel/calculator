@@ -8,13 +8,15 @@ type Token struct {
 }
 
 const (
-	ILLEGAL  TokenType = "ILLEGAL"
-	EOF      TokenType = "EOF"
-	PLUS     TokenType = "+"
-	SUBTRACT TokenType = "-"
-	DIVIDE   TokenType = "/"
-	MULTIPLY TokenType = "*"
-	LPAREN   TokenType = "("
-	RPAREN   TokenType = ")"
-	NUMBER   TokenType = "NUMBER"
+	ILLEGAL    TokenType = "ILLEGAL"
+	EOF        TokenType = "EOF"
+	PLUS       TokenType = "+"
+	SUBTRACT   TokenType = "-"
+	DIVIDE     TokenType = "/"
+	MULTIPLY   TokenType = "*"
+	LPAREN     TokenType = "("
+	RPAREN     TokenType = ")"
+	NUMBER     TokenType = "NUMBER"
+	ASSIGN     TokenType = "="
+	IDENTIFIER TokenType = "IDENTIFIER"
 )

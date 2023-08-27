@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/KishorPokharel/calculator/ast"
+	"github.com/KishorPokharel/calculator/eval"
 	"github.com/KishorPokharel/calculator/lexer"
 	"github.com/KishorPokharel/calculator/token"
 )
@@ -48,6 +49,16 @@ var ErrNoTokens = errors.New("no tokens")
 func (p *Parser) Parse() (ast.Node, error) {
 	if p.curToken.Type == token.EOF {
 		return nil, ErrNoTokens
+	}
+	if p.curToken.Type == token.IDENTIFIER && p.peekToken.Type == token.ASSIGN {
+		id := p.curToken.Literal
+		p.nextToken() // =
+		p.nextToken()
+		expr, err := p.expr()
+		if err != nil {
+			return nil, err
+		}
+		return ast.AssignmentNode{ID: id, A: expr}, nil
 	}
 	result, err := p.expr()
 	if err != nil {
@@ -121,6 +132,18 @@ func (p *Parser) factor() (ast.Node, error) {
 		}
 		return ast.NumberNode{Value: f}, nil
 	}
+
+	// ID
+	if p.curToken.Type == token.IDENTIFIER {
+		id := p.curToken.Literal
+		val, ok := eval.State[id]
+		if !ok {
+			return nil, fmt.Errorf("Undeclared variable \"%s\"", p.curToken.Literal)
+		}
+		p.nextToken()
+		return ast.NumberNode{Value: val}, nil
+	}
+
 	// "-" Factor
 	if p.curToken.Type == token.SUBTRACT {
 		p.nextToken()
@@ -130,6 +153,7 @@ func (p *Parser) factor() (ast.Node, error) {
 		}
 		return ast.NegationNode{A: res}, nil
 	}
+
 	// "(" E ")"
 	if p.curToken.Type == token.LPAREN {
 		p.nextToken()

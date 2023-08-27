@@ -4,6 +4,8 @@ import (
 	"github.com/KishorPokharel/calculator/ast"
 )
 
+var State = map[string]float64{}
+
 func Eval(tree ast.Node) float64 {
 	switch v := tree.(type) {
 	case ast.NumberNode:
@@ -18,6 +20,13 @@ func Eval(tree ast.Node) float64 {
 		return Eval(v.A) / Eval(v.B)
 	case ast.NegationNode:
 		return -Eval(v.A)
+	case ast.AssignmentNode:
+		result := Eval(v.A)
+		State[v.ID] = result
+		return result
+	// case ast.IdentifierNode:
+	// 	result := State[v.ID]
+	// 	return result
 	default:
 		panic("Invalid ast node")
 	}
