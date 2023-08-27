@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"strconv"
 
@@ -42,68 +44,97 @@ func (p *Parser) nextToken() {
 // 	}
 // }
 
-func (p *Parser) Parse() ast.Node {
-	if p.curToken.Type != token.EOF {
-		result := p.expr()
-		return result
+var ErrNoTokens = errors.New("no tokens")
+
+func (p *Parser) Parse() (ast.Node, error) {
+	if p.curToken.Type == token.EOF {
+		return nil, ErrNoTokens
 	}
-	return nil
+	result, err := p.expr()
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
-func (p *Parser) expr() ast.Node {
-	result := p.term()
+func (p *Parser) expr() (ast.Node, error) {
+	result, err := p.term()
+	if err != nil {
+		return nil, err
+	}
 	for p.curToken.Type != token.EOF && (p.curToken.Type == token.PLUS || p.curToken.Type == token.SUBTRACT) {
 		switch p.curToken.Type {
 		case token.PLUS:
 			p.nextToken()
-			result = ast.AddNode{A: result, B: p.term()}
+			B, err := p.term()
+			if err != nil {
+				return nil, err
+			}
+			result = ast.AddNode{A: result, B: B}
 		case token.SUBTRACT:
 			p.nextToken()
-			result = ast.SubtractNode{A: result, B: p.term()}
+			B, err := p.term()
+			if err != nil {
+				return nil, err
+			}
+			result = ast.SubtractNode{A: result, B: B}
 		default:
 			p.nextToken()
 		}
 	}
-	return result
+	return result, nil
 }
 
-func (p *Parser) term() ast.Node {
-	result := p.factor()
+func (p *Parser) term() (ast.Node, error) {
+	result, err := p.factor()
+	if err != nil {
+		return nil, err
+	}
 	for p.curToken.Type != token.EOF && (p.curToken.Type == token.MULTIPLY || p.curToken.Type == token.DIVIDE) {
 		switch p.curToken.Type {
 		case token.MULTIPLY:
 			p.nextToken()
-			result = ast.MultiplyNode{A: result, B: p.factor()}
+			B, err := p.factor()
+			if err != nil {
+				return nil, err
+			}
+			result = ast.MultiplyNode{A: result, B: B}
 		case token.DIVIDE:
 			p.nextToken()
-			result = ast.DivideNode{A: result, B: p.term()}
+			B, err := p.term()
+			if err != nil {
+				return nil, err
+			}
+			result = ast.DivideNode{A: result, B: B}
 		default:
 			p.nextToken()
 		}
 	}
-	return result
+	return result, nil
 }
 
-func (p *Parser) factor() ast.Node {
+func (p *Parser) factor() (ast.Node, error) {
 	if p.curToken.Type == token.NUMBER {
 		defer p.nextToken()
 		f, err := strconv.ParseFloat(p.curToken.Literal, 64)
 		if err != nil {
 			log.Fatal("could not parse float")
 		}
-		return ast.NumberNode{Value: f}
+		return ast.NumberNode{Value: f}, nil
 	}
 	// ( E )
 	if p.curToken.Type == token.LPAREN {
 		p.nextToken()
-		expr := p.expr()
+		expr, err := p.expr()
+		if err != nil {
+			return nil, err
+		}
 		if p.curToken.Type == token.RPAREN {
 			p.nextToken()
-			return expr
+			return expr, nil
 		} else {
-			log.Println("invalid expression, expected )")
-			return nil
+			return nil, fmt.Errorf("invalid expression, expected )")
 		}
 	}
-	return nil
+	return nil, fmt.Errorf("illegal token \"%s\"; expected a NUMBER or \"(\" token", p.curToken.Literal)
 }

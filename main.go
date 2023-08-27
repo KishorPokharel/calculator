@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 
@@ -24,7 +25,16 @@ func main() {
 		line := scanner.Text()
 		l := lexer.New(line)
 		p := parser.New(l)
-		tree := p.Parse()
+		tree, err := p.Parse()
+		if err != nil {
+			switch {
+			case errors.Is(parser.ErrNoTokens, err):
+				continue
+			default:
+				fmt.Printf("ERROR: %v\n", err)
+				continue
+			}
+		}
 		fmt.Printf("%f\n", eval.Eval(tree))
 		// fmt.Printf("%s\n", tree)
 	}
