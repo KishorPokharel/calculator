@@ -153,7 +153,6 @@ func (p *Parser) factor() (ast.Node, error) {
 		}
 		return ast.NegationNode{A: res}, nil
 	}
-
 	// "(" E ")"
 	if p.curToken.Type == token.LPAREN {
 		p.nextToken()
