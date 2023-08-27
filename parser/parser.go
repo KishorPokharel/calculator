@@ -3,7 +3,6 @@ package parser
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 
 	"github.com/KishorPokharel/calculator/ast"
@@ -118,11 +117,20 @@ func (p *Parser) factor() (ast.Node, error) {
 		defer p.nextToken()
 		f, err := strconv.ParseFloat(p.curToken.Literal, 64)
 		if err != nil {
-			log.Fatal("could not parse float")
+			return nil, fmt.Errorf("could not parse float")
 		}
 		return ast.NumberNode{Value: f}, nil
 	}
-	// ( E )
+	// "-" Factor
+	if p.curToken.Type == token.SUBTRACT {
+		p.nextToken()
+		res, err := p.factor()
+		if err != nil {
+			return nil, err
+		}
+		return ast.NegationNode{A: res}, nil
+	}
+	// "(" E ")"
 	if p.curToken.Type == token.LPAREN {
 		p.nextToken()
 		expr, err := p.expr()

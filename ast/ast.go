@@ -49,3 +49,11 @@ type DivideNode struct {
 func (n DivideNode) String() string {
 	return fmt.Sprintf("(%s / %s)", n.A, n.B)
 }
+
+type NegationNode struct {
+	A Node
+}
+
+func (n NegationNode) String() string {
+	return fmt.Sprintf("( - %s)", n.A)
+}

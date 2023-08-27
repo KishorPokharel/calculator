@@ -16,6 +16,8 @@ func Eval(tree ast.Node) float64 {
 		return Eval(v.A) * Eval(v.B)
 	case ast.DivideNode:
 		return Eval(v.A) / Eval(v.B)
+	case ast.NegationNode:
+		return -Eval(v.A)
 	default:
 		panic("Invalid ast node")
 	}
