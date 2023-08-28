@@ -46,6 +46,7 @@ func (p *Parser) nextToken() {
 
 var ErrNoTokens = errors.New("no tokens")
 var ErrUndeclaredVariable = fmt.Errorf("undeclared variable")
+var ErrSyntax = fmt.Errorf("syntax error")
 
 func (p *Parser) Parse() (ast.Node, error) {
 	if p.curToken.Type == token.EOF {
@@ -61,7 +62,7 @@ func (p *Parser) Parse() (ast.Node, error) {
 			return nil, err
 		}
 		if p.curToken.Type != token.EOF {
-			return nil, fmt.Errorf("expected assignment statement to end, found %s", p.curToken.Literal)
+			return nil, fmt.Errorf("%w: expected assignment statement to end, found %s", ErrSyntax, p.curToken.Literal)
 		}
 		return ast.AssignmentNode{ID: id, A: expr}, nil
 	}
@@ -72,7 +73,7 @@ func (p *Parser) Parse() (ast.Node, error) {
 		return nil, err
 	}
 	if p.curToken.Type != token.EOF {
-		return nil, fmt.Errorf("expected expression to end, found %s %v", p.curToken.Literal, p.curToken)
+		return nil, fmt.Errorf("%w: expected expression to end, found %s %v", ErrSyntax, p.curToken.Literal, p.curToken)
 	}
 	return result, nil
 }
@@ -163,6 +164,22 @@ func (p *Parser) factor() (ast.Node, error) {
 		}
 		return ast.NegationNode{A: res}, nil
 	}
+
+	// "|" E "|"
+	if p.curToken.Type == token.BAR {
+		p.nextToken()
+		expr, err := p.expr()
+		if err != nil {
+			return nil, err
+		}
+		if p.curToken.Type == token.BAR {
+			p.nextToken()
+			return ast.AbsNode{A: expr}, nil
+		} else {
+			return nil, fmt.Errorf("%w: invalid expression, expected a closing |", ErrSyntax)
+		}
+	}
+
 	// "(" E ")"
 	if p.curToken.Type == token.LPAREN {
 		p.nextToken()
@@ -174,8 +191,8 @@ func (p *Parser) factor() (ast.Node, error) {
 			p.nextToken()
 			return expr, nil
 		} else {
-			return nil, fmt.Errorf("invalid expression, expected )")
+			return nil, fmt.Errorf("%w: invalid expression, expected a closing )", ErrSyntax)
 		}
 	}
-	return nil, fmt.Errorf("illegal token \"%s\"; expected a NUMBER or \"(\" token", p.curToken.Literal)
+	return nil, fmt.Errorf("%w: illegal token \"%s\"; expected a NUMBER or \"(\" token", ErrSyntax, p.curToken.Literal)
 }

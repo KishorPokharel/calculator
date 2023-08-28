@@ -21,6 +21,10 @@ func TestMain(t *testing.T) {
 		{input: "(3 + 4) - (2)", output: 5.0, parseError: nil},
 		{input: "3 + 4 * 5 / 2", output: 13.0, parseError: nil},
 		{input: "(3 + 4 * 5 / 2)", output: 13.0, parseError: nil},
+
+		{input: "(3 + 4", parseError: parser.ErrSyntax},
+		{input: "(", parseError: parser.ErrSyntax},
+
 		{input: "a=3", output: 3.0, parseError: nil},
 		{input: "a", output: 3.0, parseError: nil},
 		{input: "a+6", output: 9.0, parseError: nil},
@@ -29,6 +33,22 @@ func TestMain(t *testing.T) {
 		{input: "b=(b/5)", output: 9.0, parseError: nil},
 		{input: "", parseError: parser.ErrNoTokens},
 		{input: "c", parseError: parser.ErrUndeclaredVariable},
+
+		{input: "|45|", output: 45.0, parseError: nil},
+		{input: "|-45|", output: 45.0, parseError: nil},
+		{input: "|-((3 + 4) - (2))|", output: 5.0, parseError: nil},
+		{input: "|-5/5|", output: 1.0, parseError: nil},
+		{input: "|55-65/5|", output: 42.0, parseError: nil},
+		{input: "|(55-65)/5|", output: 2.0, parseError: nil},
+
+		{input: "c=-3", output: -3.0, parseError: nil},
+		{input: "|c|", output: 3.0, parseError: nil},
+		{input: "|c-5|", output: 8.0, parseError: nil},
+
+		{input: "|d|", parseError: parser.ErrUndeclaredVariable},
+		{input: "|c", parseError: parser.ErrSyntax},
+		{input: "|-((3 + 4) - (2))", parseError: parser.ErrSyntax},
+		{input: "|-45", parseError: parser.ErrSyntax},
 	}
 
 	for _, test := range tests {

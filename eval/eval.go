@@ -20,6 +20,12 @@ func Eval(tree ast.Node) float64 {
 		return Eval(v.A) / Eval(v.B)
 	case ast.NegationNode:
 		return -Eval(v.A)
+	case ast.AbsNode:
+		res := Eval(v.A)
+		if res < 0 {
+			return -res
+		}
+		return res
 	case ast.AssignmentNode:
 		result := Eval(v.A)
 		State[v.ID] = result

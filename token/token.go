@@ -16,6 +16,7 @@ const (
 	MULTIPLY   TokenType = "*"
 	LPAREN     TokenType = "("
 	RPAREN     TokenType = ")"
+	BAR        TokenType = "|"
 	NUMBER     TokenType = "NUMBER"
 	ASSIGN     TokenType = "="
 	IDENTIFIER TokenType = "IDENTIFIER"

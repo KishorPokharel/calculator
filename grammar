@@ -15,5 +15,6 @@ Factor :=
     | NUMBER
     | ID
     | "-" Factor
+    | "|" Expression "|"
     | "(" Expression ")"
     ;

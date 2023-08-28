@@ -58,6 +58,14 @@ func (n NegationNode) String() string {
 	return fmt.Sprintf("( - %s)", n.A)
 }
 
+type AbsNode struct {
+	A Node
+}
+
+func (n AbsNode) String() string {
+	return fmt.Sprintf("(|%s|)", n.A)
+}
+
 type AssignmentNode struct {
 	ID string
 	A  Node
