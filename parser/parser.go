@@ -60,7 +60,7 @@ func (p *Parser) Parse() (ast.Node, error) {
 			return nil, err
 		}
 		if p.curToken.Type != token.EOF {
-			return nil, fmt.Errorf("Syntax error: assignment statement to end, found %s", p.curToken.Literal)
+			return nil, fmt.Errorf("expected assignment statement to end, found %s", p.curToken.Literal)
 		}
 		return ast.AssignmentNode{ID: id, A: expr}, nil
 	}
@@ -71,7 +71,7 @@ func (p *Parser) Parse() (ast.Node, error) {
 		return nil, err
 	}
 	if p.curToken.Type != token.EOF {
-		return nil, fmt.Errorf("Syntax error: Expected expression to end, found %s", p.curToken.Literal)
+		return nil, fmt.Errorf("expected expression to end, found %s %v", p.curToken.Literal, p.curToken)
 	}
 	return result, nil
 }

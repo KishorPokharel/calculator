@@ -50,7 +50,6 @@ func (l *Lexer) NextToken() token.Token {
 		if isDigit(l.ch) {
 			tok.Type = token.NUMBER
 			tok.Literal = l.readNumber()
-			return tok
 		} else if isAlpha(l.ch) {
 			tok.Type = token.IDENTIFIER
 			tok.Literal = l.readIdentifier()
@@ -80,6 +79,7 @@ func (l *Lexer) readNumber() string {
 	}
 	return l.input[position:l.position]
 }
+
 func (l *Lexer) readIdentifier() string {
 	position := l.position
 	for isAlphaNumeric(l.ch) {
@@ -89,7 +89,7 @@ func (l *Lexer) readIdentifier() string {
 }
 
 func (l *Lexer) skipWhitespace() {
-	if l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
 		l.readChar()
 	}
 }
