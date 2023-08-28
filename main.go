@@ -9,6 +9,7 @@ import (
 	"github.com/KishorPokharel/calculator/eval"
 	"github.com/KishorPokharel/calculator/lexer"
 	"github.com/KishorPokharel/calculator/parser"
+	"github.com/KishorPokharel/calculator/token"
 )
 
 const PROMPT = ">> "
@@ -36,13 +37,15 @@ func main() {
 			}
 		}
 		fmt.Printf("%f\n", eval.Eval(tree))
-		// fmt.Printf("%s\n", tree)
-		// for {
-		// 	tok := l.NextToken()
-		// 	if tok.Type == token.EOF {
-		// 		break
-		// 	}
-		// 	fmt.Println(tok)
-		// }
+	}
+}
+
+func printTokens(l *lexer.Lexer) {
+	for {
+		tok := l.NextToken()
+		if tok.Type == token.EOF {
+			break
+		}
+		fmt.Println(tok)
 	}
 }

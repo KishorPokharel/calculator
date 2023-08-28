@@ -50,9 +50,11 @@ func (l *Lexer) NextToken() token.Token {
 		if isDigit(l.ch) {
 			tok.Type = token.NUMBER
 			tok.Literal = l.readNumber()
+			return tok
 		} else if isAlpha(l.ch) {
 			tok.Type = token.IDENTIFIER
 			tok.Literal = l.readIdentifier()
+			return tok
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
 		}

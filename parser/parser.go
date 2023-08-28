@@ -45,6 +45,7 @@ func (p *Parser) nextToken() {
 // }
 
 var ErrNoTokens = errors.New("no tokens")
+var ErrUndeclaredVariable = fmt.Errorf("undeclared variable")
 
 func (p *Parser) Parse() (ast.Node, error) {
 	if p.curToken.Type == token.EOF {
@@ -147,7 +148,7 @@ func (p *Parser) factor() (ast.Node, error) {
 		id := p.curToken.Literal
 		val, ok := eval.State[id]
 		if !ok {
-			return nil, fmt.Errorf("Undeclared variable \"%s\"", p.curToken.Literal)
+			return nil, fmt.Errorf("%w \"%s\"", ErrUndeclaredVariable, p.curToken.Literal)
 		}
 		p.nextToken()
 		return ast.NumberNode{Value: val}, nil
