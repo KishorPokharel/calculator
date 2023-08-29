@@ -14,17 +14,22 @@ Expression :=
     ;
 
 Term := 
-    | Factor ( ( "*" | "/" ) Factor )*;
+    | Primary ( ( "*" | "/" ) Primary )*;
+    ;
+
+Primary :=
+    | Factor ( "^" Primary)*
     ;
 
 Factor :=
     | NUMBER
     | ID
     | "-" Factor
+    | "|" Expression "|"
     | "(" Expression ")"
     ;
 ```
 
 TODO:
-- Add more operators ( ^ % |abs| ! )
+- Add more operators ( % ! )
 - Add global constants

@@ -8,7 +8,11 @@ Expression :=
     ;
 
 Term := 
-    | Factor ( ( "*" | "/" ) Factor )*;
+    | Primary ( ( "*" | "/" ) Primary )*;
+    ;
+
+Primary :=
+    | Factor ( "^" Primary)*
     ;
 
 Factor :=
