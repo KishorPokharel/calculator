@@ -73,7 +73,7 @@ func (p *Parser) Parse() (ast.Node, error) {
 		return nil, err
 	}
 	if p.curToken.Type != token.EOF {
-		return nil, fmt.Errorf("%w: expected expression to end, found %s %v", ErrSyntax, p.curToken.Literal, p.curToken)
+		return nil, fmt.Errorf("%w: expected expression to end, found %s", ErrSyntax, p.curToken.Literal)
 	}
 	return result, nil
 }
@@ -99,15 +99,13 @@ func (p *Parser) expr() (ast.Node, error) {
 				return nil, err
 			}
 			result = ast.SubtractNode{A: result, B: B}
-		default:
-			p.nextToken()
 		}
 	}
 	return result, nil
 }
 
 func (p *Parser) term() (ast.Node, error) {
-	result, err := p.factor()
+	result, err := p.primary()
 	if err != nil {
 		return nil, err
 	}
@@ -115,21 +113,35 @@ func (p *Parser) term() (ast.Node, error) {
 		switch p.curToken.Type {
 		case token.MULTIPLY:
 			p.nextToken()
-			B, err := p.factor()
+			B, err := p.primary()
 			if err != nil {
 				return nil, err
 			}
 			result = ast.MultiplyNode{A: result, B: B}
 		case token.DIVIDE:
 			p.nextToken()
-			B, err := p.term()
+			B, err := p.primary()
 			if err != nil {
 				return nil, err
 			}
 			result = ast.DivideNode{A: result, B: B}
-		default:
-			p.nextToken()
 		}
+	}
+	return result, nil
+}
+
+func (p *Parser) primary() (ast.Node, error) {
+	result, err := p.factor()
+	if err != nil {
+		return nil, err
+	}
+	if p.curToken.Type != token.EOF && p.curToken.Type == token.POWER {
+		p.nextToken()
+		B, err := p.primary() // right associative
+		if err != nil {
+			return nil, err
+		}
+		result = ast.PowerNode{A: result, B: B}
 	}
 	return result, nil
 }
@@ -191,8 +203,8 @@ func (p *Parser) factor() (ast.Node, error) {
 			p.nextToken()
 			return expr, nil
 		} else {
-			return nil, fmt.Errorf("%w: invalid expression, expected a closing )", ErrSyntax)
+			return nil, fmt.Errorf("%w: invalid expression, expected a closing \")\"", ErrSyntax)
 		}
 	}
-	return nil, fmt.Errorf("%w: illegal token \"%s\"; expected a NUMBER or \"(\" token", ErrSyntax, p.curToken.Literal)
+	return nil, fmt.Errorf("%w: illegal token \"%s\", expected a NUMBER or \"(\" token", ErrSyntax, p.curToken.Literal)
 }

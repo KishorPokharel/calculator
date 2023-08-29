@@ -1,6 +1,8 @@
 package eval
 
 import (
+	"math"
+
 	"github.com/KishorPokharel/calculator/ast"
 )
 
@@ -26,6 +28,8 @@ func Eval(tree ast.Node) float64 {
 			return -res
 		}
 		return res
+	case ast.PowerNode:
+		return math.Pow(Eval(v.A), Eval(v.B))
 	case ast.AssignmentNode:
 		result := Eval(v.A)
 		State[v.ID] = result
