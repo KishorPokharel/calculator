@@ -2,6 +2,8 @@ Learning how to write parsers by implementing an expression evaluator.
 Uses recursive-descent parsing technique.
 Supports variables.
 
+![image](https://github.com/KishorPokharel/calculator/blob/master/image.png?raw=true)
+
 Grammar:
 ```
 Statement :=
