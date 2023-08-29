@@ -66,6 +66,15 @@ func (n AbsNode) String() string {
 	return fmt.Sprintf("(|%s|)", n.A)
 }
 
+type PowerNode struct {
+	A Node
+	B Node
+}
+
+func (n PowerNode) String() string {
+	return fmt.Sprintf("(%s ^ %s)", n.A, n.B)
+}
+
 type AssignmentNode struct {
 	ID string
 	A  Node

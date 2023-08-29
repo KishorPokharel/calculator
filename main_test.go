@@ -25,15 +25,18 @@ func TestMain(t *testing.T) {
 		{input: "(3 + 4", parseError: parser.ErrSyntax},
 		{input: "(", parseError: parser.ErrSyntax},
 
+		// vars
 		{input: "a=3", output: 3.0, parseError: nil},
 		{input: "a", output: 3.0, parseError: nil},
 		{input: "a+6", output: 9.0, parseError: nil},
 		{input: "b=(45-3)", output: 42.0, parseError: nil},
 		{input: "b=(a+b)", output: 45.0, parseError: nil},
 		{input: "b=(b/5)", output: 9.0, parseError: nil},
+
 		{input: "", parseError: parser.ErrNoTokens},
 		{input: "c", parseError: parser.ErrUndeclaredVariable},
 
+		// abs
 		{input: "|45|", output: 45.0, parseError: nil},
 		{input: "|-45|", output: 45.0, parseError: nil},
 		{input: "|-((3 + 4) - (2))|", output: 5.0, parseError: nil},
@@ -49,6 +52,27 @@ func TestMain(t *testing.T) {
 		{input: "|c", parseError: parser.ErrSyntax},
 		{input: "|-((3 + 4) - (2))", parseError: parser.ErrSyntax},
 		{input: "|-45", parseError: parser.ErrSyntax},
+
+		// power
+		{input: "2^2", output: 4.0, parseError: nil},
+		{input: "2^(2+1)", output: 8.0, parseError: nil},
+		{input: "2^(2+1)/2", output: 4.0, parseError: nil},
+		{input: "2^(3)+2", output: 10.0, parseError: nil},
+		{input: "(2^(3)+2)", output: 10.0, parseError: nil},
+		{input: "2^3 + 1", output: 9.0, parseError: nil},
+		{input: "(2^3 + 1)/3", output: 3.0, parseError: nil},
+		{input: "(2^3 + 2^3)", output: 16.0, parseError: nil},
+		{input: "(2^3 + 2^3) / 2", output: 8.0, parseError: nil},
+		{input: "(2^3 + 2^3) / 2 + 4 - 2", output: 10.0, parseError: nil},
+
+		{input: "-2^2", output: 4.0, parseError: nil},
+		{input: "-2^3", output: -8.0, parseError: nil},
+		{input: "(-2^3 + -2^3) / 2 + 4 - 2", output: -6.0, parseError: nil},
+
+		{input: "2^3^4", output: 2417851639229258349412352.0, parseError: nil},
+		{input: "((2+3)^4)/5", output: 125.0, parseError: nil},
+
+		{input: "((2+3^4)/5", parseError: parser.ErrSyntax},
 	}
 
 	for _, test := range tests {
