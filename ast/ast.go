@@ -58,6 +58,14 @@ func (n NegationNode) String() string {
 	return fmt.Sprintf("( - %s)", n.A)
 }
 
+type UnaryPlusNode struct {
+	A Node
+}
+
+func (n UnaryPlusNode) String() string {
+	return fmt.Sprintf("%s", n.A)
+}
+
 type AbsNode struct {
 	A Node
 }

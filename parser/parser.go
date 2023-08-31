@@ -79,6 +79,9 @@ func (p *Parser) Parse() (ast.Node, error) {
 }
 
 func (p *Parser) expr() (ast.Node, error) {
+	if p.curToken.Type == token.EOF {
+		return nil, fmt.Errorf("%w", ErrSyntax)
+	}
 	result, err := p.term()
 	if err != nil {
 		return nil, err
@@ -177,6 +180,16 @@ func (p *Parser) factor() (ast.Node, error) {
 		return ast.NegationNode{A: res}, nil
 	}
 
+	// "+" Factor
+	if p.curToken.Type == token.PLUS {
+		p.nextToken()
+		res, err := p.factor()
+		if err != nil {
+			return nil, err
+		}
+		return ast.UnaryPlusNode{A: res}, nil
+	}
+
 	// "|" E "|"
 	if p.curToken.Type == token.BAR {
 		p.nextToken()
@@ -206,5 +219,6 @@ func (p *Parser) factor() (ast.Node, error) {
 			return nil, fmt.Errorf("%w: invalid expression, expected a closing \")\"", ErrSyntax)
 		}
 	}
-	return nil, fmt.Errorf("%w: illegal token \"%s\", expected a NUMBER or \"(\" token", ErrSyntax, p.curToken.Literal)
+
+	return nil, fmt.Errorf("%w: illegal token \"%s\"", ErrSyntax, p.curToken.Literal)
 }
