@@ -26,7 +26,7 @@ Primary :=
 Factor :=
     | NUMBER
     | ID
-    | "-" Factor
+    | ( "-" | "+" ) Factor
     | "|" Expression "|"
     | "(" Expression ")"
     ;
