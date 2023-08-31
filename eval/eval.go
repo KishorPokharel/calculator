@@ -22,6 +22,8 @@ func Eval(tree ast.Node) float64 {
 		return Eval(v.A) / Eval(v.B)
 	case ast.NegationNode:
 		return -Eval(v.A)
+	case ast.UnaryPlusNode:
+		return Eval(v.A)
 	case ast.AbsNode:
 		res := Eval(v.A)
 		if res < 0 {
