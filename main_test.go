@@ -15,6 +15,15 @@ func TestMain(t *testing.T) {
 		output     float64
 		parseError error
 	}{
+		{input: "3", output: 3.0, parseError: nil},
+		{input: "-3", output: -3.0, parseError: nil},
+		{input: "+3", output: 3.0, parseError: nil},
+		{input: "+3-2", output: 1.0, parseError: nil},
+		{input: "+4-9", output: -5.0, parseError: nil},
+		{input: "-4-9", output: -13.0, parseError: nil},
+		{input: "+(4-9)", output: -5.0, parseError: nil},
+		{input: "-(4-9)", output: 5.0, parseError: nil},
+
 		{input: "3 + 4", output: 7.0, parseError: nil},
 		{input: "(3 + 4)", output: 7.0, parseError: nil},
 		{input: "(3 + 4) * 2", output: 14.0, parseError: nil},
