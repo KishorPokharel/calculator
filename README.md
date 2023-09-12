@@ -31,7 +31,3 @@ Factor :=
     | "(" Expression ")"
     ;
 ```
-
-TODO:
-- Add more operators ( % ! )
-- Add global constants
