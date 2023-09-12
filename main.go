@@ -1,29 +1,31 @@
 package main
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
-	"os"
+	"log"
 
 	"github.com/KishorPokharel/calculator/eval"
 	"github.com/KishorPokharel/calculator/lexer"
 	"github.com/KishorPokharel/calculator/parser"
-	"github.com/KishorPokharel/calculator/token"
+
+	"github.com/chzyer/readline"
 )
 
 const PROMPT = ">> "
 
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	for {
-		fmt.Printf(PROMPT)
-		scanned := scanner.Scan()
-		if !scanned {
-			return
-		}
+	rl, err := readline.New(PROMPT)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rl.Close()
 
-		line := scanner.Text()
+	for {
+		line, err := rl.Readline()
+		if err != nil { // io.EOF
+			break
+		}
 		l := lexer.New(line)
 		p := parser.New(l)
 		tree, err := p.Parse()
@@ -40,12 +42,12 @@ func main() {
 	}
 }
 
-func printTokens(l *lexer.Lexer) {
-	for {
-		tok := l.NextToken()
-		if tok.Type == token.EOF {
-			break
-		}
-		fmt.Println(tok)
-	}
-}
+// func printTokens(l *lexer.Lexer) {
+// 	for {
+// 		tok := l.NextToken()
+// 		if tok.Type == token.EOF {
+// 			break
+// 		}
+// 		fmt.Println(tok)
+// 	}
+// }
