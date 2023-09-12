@@ -32,6 +32,9 @@ func Eval(tree ast.Node) float64 {
 		return res
 	case ast.PowerNode:
 		return math.Pow(Eval(v.A), Eval(v.B))
+	case ast.FactorialNode:
+		val := Eval(v.A)
+		return factorial(int(val))
 	case ast.AssignmentNode:
 		result := Eval(v.A)
 		State[v.ID] = result
@@ -42,4 +45,12 @@ func Eval(tree ast.Node) float64 {
 	default:
 		panic("Invalid ast node")
 	}
+}
+
+func factorial(v int) float64 {
+	res := 1
+	for i := v; i > 0; i-- {
+		res *= i
+	}
+	return float64(res)
 }

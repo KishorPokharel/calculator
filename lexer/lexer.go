@@ -45,6 +45,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.DIVIDE, l.ch)
 	case '|':
 		tok = newToken(token.BAR, l.ch)
+	case '!':
+		tok = newToken(token.BANG, l.ch)
 	case '^':
 		tok = newToken(token.POWER, l.ch)
 	case 0:

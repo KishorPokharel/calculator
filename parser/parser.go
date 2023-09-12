@@ -15,6 +15,7 @@ var (
 	ErrNoTokens           = errors.New("no tokens")
 	ErrUndeclaredVariable = errors.New("undeclared variable")
 	ErrSyntax             = errors.New("syntax error")
+	ErrWrapWithBang       = fmt.Errorf("wrap the expression explicitly with | to use ! operator\nExample: |a|!")
 )
 
 type Parser struct {
@@ -145,6 +146,10 @@ func (p *Parser) factor() (ast.Node, error) {
 			return nil, fmt.Errorf("could not parse float")
 		}
 		p.nextToken()
+		// check if next token is !
+		if p.curToken.Type == token.BANG {
+			return nil, fmt.Errorf("%w: %w", ErrSyntax, ErrWrapWithBang)
+		}
 		return ast.NumberNode{Value: f}, nil
 	}
 
@@ -155,7 +160,11 @@ func (p *Parser) factor() (ast.Node, error) {
 		if !ok {
 			return nil, fmt.Errorf("%w \"%s\"", ErrUndeclaredVariable, p.curToken.Literal)
 		}
+		// check if next token is !
 		p.nextToken()
+		if p.curToken.Type == token.BANG {
+			return nil, fmt.Errorf("%w: %w", ErrSyntax, ErrWrapWithBang)
+		}
 		return ast.NumberNode{Value: val}, nil
 	}
 
@@ -166,6 +175,12 @@ func (p *Parser) factor() (ast.Node, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		// check if next token is !
+		if p.curToken.Type == token.BANG {
+			return nil, fmt.Errorf("%w: %w", ErrSyntax, ErrWrapWithBang)
+		}
+
 		return ast.NegationNode{A: res}, nil
 	}
 
@@ -176,6 +191,12 @@ func (p *Parser) factor() (ast.Node, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		// check if next token is !
+		if p.curToken.Type == token.BANG {
+			return nil, fmt.Errorf("%w: %w", ErrSyntax, ErrWrapWithBang)
+		}
+
 		return ast.UnaryPlusNode{A: res}, nil
 	}
 
@@ -188,6 +209,13 @@ func (p *Parser) factor() (ast.Node, error) {
 		}
 		if p.curToken.Type == token.BAR {
 			p.nextToken()
+			// check for !, ! can only appear after |
+			if p.curToken.Type == token.BANG {
+				p.nextToken()
+				return ast.FactorialNode{
+					A: ast.AbsNode{A: expr},
+				}, nil
+			}
 			return ast.AbsNode{A: expr}, nil
 		} else {
 			return nil, fmt.Errorf("%w: invalid expression, expected a closing |", ErrSyntax)
@@ -203,6 +231,10 @@ func (p *Parser) factor() (ast.Node, error) {
 		}
 		if p.curToken.Type == token.RPAREN {
 			p.nextToken()
+			// check if next token is !
+			if p.curToken.Type == token.BANG {
+				return nil, fmt.Errorf("%w: %w", ErrSyntax, ErrWrapWithBang)
+			}
 			return expr, nil
 		} else {
 			return nil, fmt.Errorf("%w: invalid expression, expected a closing \")\"", ErrSyntax)

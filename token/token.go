@@ -17,6 +17,7 @@ const (
 	LPAREN     TokenType = "("
 	RPAREN     TokenType = ")"
 	BAR        TokenType = "|"
+	BANG       TokenType = "!"
 	POWER      TokenType = "^"
 	NUMBER     TokenType = "NUMBER"
 	ASSIGN     TokenType = "="

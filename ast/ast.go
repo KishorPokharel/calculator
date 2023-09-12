@@ -92,6 +92,14 @@ func (n AssignmentNode) String() string {
 	return fmt.Sprintf("(%s = %s)", n.ID, n.A)
 }
 
+type FactorialNode struct {
+	A Node
+}
+
+func (n FactorialNode) String() string {
+	return fmt.Sprintf("( (%s)! )", n.A)
+}
+
 // type IdentifierNode struct {
 // 	ID string
 // }

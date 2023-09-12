@@ -82,6 +82,19 @@ func TestMain(t *testing.T) {
 		{input: "((2+3)^4)/5", output: 125.0, parseError: nil},
 
 		{input: "((2+3^4)/5", parseError: parser.ErrSyntax},
+
+		// factorial
+		{input: "2!", parseError: parser.ErrSyntax},
+		{input: "(2)!", parseError: parser.ErrSyntax},
+		{input: "|(2)!|", parseError: parser.ErrSyntax},
+		{input: "((2+3^4)/5!", parseError: parser.ErrSyntax},
+
+		{input: "|2|!", output: 2, parseError: nil},
+		{input: "|2+1|!", output: 6, parseError: nil},
+		{input: "|2+2|!", output: 24, parseError: nil},
+		{input: "|2+2*3|!", output: 40320, parseError: nil},
+		{input: "|2+2*3/2|!", output: 120, parseError: nil},
+		{input: "|2^4|!", output: 20_922_789_888_000, parseError: nil},
 	}
 
 	for _, test := range tests {
