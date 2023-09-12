@@ -11,6 +11,12 @@ import (
 	"github.com/KishorPokharel/calculator/token"
 )
 
+var (
+	ErrNoTokens           = errors.New("no tokens")
+	ErrUndeclaredVariable = errors.New("undeclared variable")
+	ErrSyntax             = errors.New("syntax error")
+)
+
 type Parser struct {
 	l         *lexer.Lexer
 	errors    []string
@@ -31,23 +37,6 @@ func (p *Parser) nextToken() {
 	p.peekToken = p.l.NextToken()
 }
 
-// func (p *Parser) Parse() ast.Node {
-// 	return ast.DivideNode{
-// 		A: ast.AddNode{
-// 			A: ast.NumberNode{Value: 5},
-// 			B: ast.MultiplyNode{
-// 				A: ast.NumberNode{Value: 2},
-// 				B: ast.NumberNode{Value: 3},
-// 			},
-// 		},
-// 		B: ast.NumberNode{Value: 2},
-// 	}
-// }
-
-var ErrNoTokens = errors.New("no tokens")
-var ErrUndeclaredVariable = fmt.Errorf("undeclared variable")
-var ErrSyntax = fmt.Errorf("syntax error")
-
 func (p *Parser) Parse() (ast.Node, error) {
 	if p.curToken.Type == token.EOF {
 		return nil, ErrNoTokens
@@ -57,7 +46,7 @@ func (p *Parser) Parse() (ast.Node, error) {
 		id := p.curToken.Literal
 		p.nextToken() // =
 		p.nextToken()
-		expr, err := p.expr()
+		expr, err := p.expression()
 		if err != nil {
 			return nil, err
 		}
@@ -68,7 +57,7 @@ func (p *Parser) Parse() (ast.Node, error) {
 	}
 
 	// expression
-	result, err := p.expr()
+	result, err := p.expression()
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +67,7 @@ func (p *Parser) Parse() (ast.Node, error) {
 	return result, nil
 }
 
-func (p *Parser) expr() (ast.Node, error) {
+func (p *Parser) expression() (ast.Node, error) {
 	if p.curToken.Type == token.EOF {
 		return nil, fmt.Errorf("%w", ErrSyntax)
 	}
@@ -193,7 +182,7 @@ func (p *Parser) factor() (ast.Node, error) {
 	// "|" E "|"
 	if p.curToken.Type == token.BAR {
 		p.nextToken()
-		expr, err := p.expr()
+		expr, err := p.expression()
 		if err != nil {
 			return nil, err
 		}
@@ -208,7 +197,7 @@ func (p *Parser) factor() (ast.Node, error) {
 	// "(" E ")"
 	if p.curToken.Type == token.LPAREN {
 		p.nextToken()
-		expr, err := p.expr()
+		expr, err := p.expression()
 		if err != nil {
 			return nil, err
 		}
